@@ -1,0 +1,33 @@
+[Global]
+CurrentProject=XmlDocToString.vpj
+[ProjectDates]
+XmlDocToString.vpj=20110623170124852
+[ActiveConfig]
+XmlDocToString.vpj=Debug32
+[TreeExpansion2]
+- XmlDocToString.vpj
+  - Source Files
+    - XmlDocToString.dbl
+  + Header Files
+  + Toolkit Script Files
+  - Other Files
+    - readme.txt
+scroll:0
+[State]
+SCREEN: 1600 1200 275 275 1200 850 0 0 M 0 0 0 0 1294 693 0
+CWD: ..\XmlDocToString
+FILEHIST: 9
+\FILES\DEMO\XFSERVERPLUS\COMPONENT\JAVA\xfpldemo\Product.java
+\FILES\DEMO\XFSERVERPLUS\COMPONENT\NET\xfpldemo\xfpldemo.bat
+\FILES\DEMO\XFSERVERPLUS\SERVER\SRC\GetAllProducts.dbl
+\FILES\DEMO\XFSERVERPLUS\COMPONENT\NET\xfpldemo\utils.cs
+\FILES\DEMO\XFSERVERPLUS\SERVER\SRC\GetProductsV8.dbl
+\Program Files (x86)\Synergex\SynergyDE\dbl\synxml.def
+readme.txt
+\temp.xml
+XmlDocToString.dbl
+PROJECT_CACHE: 1
+20110623170124852 2 C:\CodeExchange\Traditional\XmlDocToString\XmlDocToString.vpj
+XmlDocToString.dbl
+readme.txt
+TBCLASS: 0 0

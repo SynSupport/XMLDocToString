@@ -1,0 +1,102 @@
+
+.include "DBLDIR:synxml.def"
+
+main XmlDocToStringTest
+
+    .include "WND:tools.def"
+
+    record 
+        xmlFileSpec         ,a256
+        xmlParser           ,XML_PARSER_TYPE
+        xmlDoc              ,XML_DOC_TYPE
+    endrecord
+proc
+    
+    u_start()
+    
+    ;;Get the file spec of an XML file
+    if (%u_getfilename(xmlFileSpec,"Pick an XML file",1,"XML Files (*.xml)","*.xml"))
+    begin
+        ;;Parse the file into an in memory XML document
+        xmlParser = %xml_parser_create()
+        if (xmlDoc = %xml_parser_parsefile(xmlParser,xmlFileSpec)) then 
+        begin
+            ;;Move the data from the XML document to a System.String
+            data xmlInString, @System.String
+            xmlInString = XmlDocToString(xmlDoc)
+            xml_doc_delete(xmlDoc)
+
+            ;;Display the resulting XML to the screen
+            writes(g_terminal,xmlInString)
+            u_message("How does it look?")
+        end
+        else
+            u_message("Failed to parse XML document")
+        xml_parser_delete(xmlParser)
+    end
+    
+    u_finish()
+    
+endmain
+
+;;; <summary>
+;;; Copies XML data from a Synergy XML API document to a System.String
+;;; </summary>
+;;; <param name="aXmlDoc">Passsed in XML document</param>
+;;; <returns>A System.String containing the data from the XML document</returns>
+function XmlDocToString, @System.String
+    required in  aXmlDoc    ,XML_DOC_TYPE
+    endparams
+
+    .define D_MAXSIZE   65535
+    stack record 
+        xmlString           ,XML_STRING_TYPE
+        xmlMemHandle        ,D_ADDR
+        xmlSize             ,int
+        result              ,@System.String
+    endrecord
+    structure chunk
+                            ,a D_MAXSIZE
+    endstructure
+proc
+        
+    xmlString = %xml_doc_tostring(aXmlDoc)
+    xmlMemHandle = %xml_string_gethandle(xmlString)
+    xmlSize=%xml_string_getsize(xmlString)
+    
+    ;;If the data is less than 64K then we can just copy it directly out
+    if (xmlSize<=D_MAXSIZE) then 
+        result = ^m(chunk(1:xmlSize),xmlMemHandle)
+    else
+    begin
+        data chunks     ,int
+        data count      ,int
+        data remaining  ,int
+        
+        ;How many full 64K chunks do we have?
+        chunks = (xmlSize/D_MAXSIZE)
+
+        ;Append the full 64K chunks to the output string
+        result = ""
+        for count from 1 thru chunks
+        begin
+            data thisChunk, @System.String
+            thisChunk = ^m(chunk[count],xmlMemHandle)
+            result = System.String.Concat(result,thisChunk)
+        end
+
+        ;Then append any remaining data (less than a full chunk)
+        if (remaining=(xmlSize-((chunks*D_MAXSIZE))))
+        begin
+            data thisChunk, @System.String
+            thisChunk = ^m(chunk[chunks+1](1:remaining),xmlMemHandle)
+            result = System.String.Concat(result,thisChunk)
+        end
+    end
+    
+    ;;Clean up
+    xcall xml_string_delete(xmlString)
+    
+    freturn result
+    
+endfunction
